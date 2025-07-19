@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EpicHumorJr Feed (API Version)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+
+    .post {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .post img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>EpicHumorJr Tumblr Feed</h1>
+  <div id="posts"></div>
+
+  <script>
+    const apiKey = 'DIlOHJMa3Vu4bYUNH2yjIBXODHgv7eMiSVn2XKZq17UttUSRZx'; //
+    const blogName = 'epichumorjr.tumblr.com';
+
+    fetch(`https://api.tumblr.com/v2/blog/${blogName}/posts?api_key=${apiKey}`)
+      .then(response => response.json())
+      .then(data => {
+        const posts = data.response.posts;
+        const container = document.getElementById('posts');
+
+        posts.forEach(post => {
+          const div = document.createElement('div');
+          div.className = 'post';
+
+          if (post.type === 'photo' && post.photos.length > 0) {
+            div.innerHTML = `
+              <h3>${post.summary || 'Photo Post'}</h3>
+              <img src="${post.photos[0].original_size.url}" alt="Tumblr Photo">
+            `;
+          } else if (post.type === 'text') {
+            div.innerHTML = `
+              <h3>${post.title || 'Text Post'}</h3>
+              <p>${post.body}</p>
+            `;
+          } else {
+            div.innerHTML = `<p>Unsupported post type: ${post.type}</p>`;
+          }
+
+          container.appendChild(div);
+        });
+      })
+      .catch(err => {
+        console.error('Error loading posts:', err);
+        document.getElementById('posts').innerHTML = `<p>Failed to load Tumblr posts.</p>`;
+      });
+  </script>
+
+</body>
+</html>
